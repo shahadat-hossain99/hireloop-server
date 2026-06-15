@@ -34,6 +34,15 @@ async function run() {
     const database = client.db("hireloop_db");
     const jobsCollection = database.collection("jobs");
     const companyCollection = database.collection("companies");
+    const userCollection = database.collection("user");
+
+    // ! for user
+
+    app.get("/api/users", async (req, res) => {
+      const cursor = userCollection.find().skip(4);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
 
     app.get("/api/jobs", async (req, res) => {
       const query = {};
@@ -44,22 +53,48 @@ async function run() {
         query.status = req.query.status;
       }
 
-      const cursor = jobsCollection.find(query);
+      const cursor = jobsCollection.find(query).skip(11);
       const result = await cursor.toArray();
       res.send(result);
     });
 
     app.post("/api/jobs", async (req, res) => {
       const job = req.body;
-      const result = await jobsCollection.insertOne(job);
+      const newJob = {
+        ...job,
+        createdAt: new Date(),
+      };
+      const result = await jobsCollection.insertOne(newJob);
       res.send(result);
     });
 
     // Company related apis
 
+    app.get("/api/companies", async (req, res) => {
+      const cursor = companyCollection.find().skip(2);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    app.get("/api/my/companies", async (req, res) => {
+      const query = {};
+      if (req.query.recruiterId) {
+        query.recruiterId = req.query.recruiterId;
+      }
+      console.log(req.query.recruiterId, "server");
+      const result = await companyCollection.findOne(query);
+      console.log(result, "server");
+
+      res.json(result || {});
+    });
+
     app.post("/api/companies", async (req, res) => {
       const Company = req.body;
-      const result = await companyCollection.insertOne(Company);
+      const newCompany = {
+        ...Company,
+        createdAt: new Date(),
+      };
+      const result = await companyCollection.insertOne(newCompany);
       res.send(result);
     });
 
