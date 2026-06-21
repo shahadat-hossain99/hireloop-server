@@ -35,6 +35,7 @@ async function run() {
     const jobsCollection = database.collection("jobs");
     const companyCollection = database.collection("companies");
     const userCollection = database.collection("user");
+    const applicationsCollection = database.collection("applications");
 
     // ! for user
 
@@ -106,6 +107,18 @@ async function run() {
         createdAt: new Date(),
       };
       const result = await companyCollection.insertOne(newCompany);
+      res.send(result);
+    });
+
+    // Applications
+
+    app.post("/api/applications", async (req, res) => {
+      const application = req.body;
+      const newApplication = {
+        ...application,
+        createdAt: new Date(),
+      };
+      const result = await applicationsCollection.insertOne(newApplication);
       res.send(result);
     });
 
