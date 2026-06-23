@@ -122,6 +122,20 @@ async function run() {
       const result = await companyCollection.insertOne(newCompany);
       res.send(result);
     });
+    // company status
+    app.patch("/api/companies/:id", async (req, res) => {
+      const id = req.params.id;
+      const updatedCompany = req.body;
+      const filter = { _id: new ObjectId(id) };
+
+      const updatedDoc = {
+        $set: {
+          status: updatedCompany.status,
+        },
+      };
+      const result = await companyCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
 
     // Applications
 
